@@ -1,0 +1,200 @@
+import random
+
+def crearEntrenador(tupla):
+    nombre_entrenador = input("Ingrese el nombre del entrenador: ")
+    nombre_pokemon = input("Ingrese el nombre del Pokemon: ")
+
+    ataque = random.randint(150, 250)
+    vida = random.randint(500, 900)
+
+    nuevo_entrenador = (
+        nombre_entrenador,
+        nombre_pokemon,
+        ataque,
+        vida
+    )
+
+    tupla.append(nuevo_entrenador)
+    print("\nEntrenador creado correctamente.")
+    print("Entrenador:", nombre_entrenador)
+    print("Pokemon:", nombre_pokemon)
+    print("Ataque:", ataque)
+    print("Vida:", vida)
+
+def listaEntrenador(tupla):
+    cantidad = len(tupla)
+
+    for i in range(cantidad - 1):
+        for j in range(cantidad - 1 - i):
+            if tupla[j][2] > tupla[j - (-1)][2]:
+                tupla[j], tupla[j - (-1)] = tupla[j - (-1)], tupla[j]
+
+    print("\n========== LISTA DE ENTRENADORES ==========")
+
+    if len(tupla) == 0:
+        print("No hay entrenadores registrados.")
+        return
+
+    for numero, pokemon in enumerate(tupla, start=1):
+        print(
+            numero,
+            ". Entrenador:", pokemon[0],
+            "| Pokemon:", pokemon[1],
+            "| Ataque:", pokemon[2],
+            "| Vida:", pokemon[3]
+        )
+
+def borraPorPokemon(tupla):
+    if len(tupla) == 0:
+        print("\nNo hay entrenadores registrados.")
+        return
+
+    cantidad = len(tupla)
+
+    for i in range(cantidad - 1):
+        posicion_menor = i
+        for j in range(i, cantidad):
+            if tupla[j][3] < tupla[posicion_menor][3]:
+                posicion_menor = j
+
+        tupla[i], tupla[posicion_menor] = tupla[posicion_menor], tupla[i]
+
+    vida_buscada = int(input("\nIngrese la vida a buscar: "))
+
+    inicio = 0
+    fin = len(tupla) - 1
+    posicion = -1
+
+    while inicio <= fin:
+        medio = (inicio + fin) // 2
+
+        if tupla[medio][3] == vida_buscada:
+            posicion = medio
+            break
+        elif tupla[medio][3] < vida_buscada:
+            inicio = medio - (-1)
+        else:
+            fin = medio - 1
+
+    if posicion != -1:
+        entrenador = tupla[posicion]
+
+        print("\nEntrenador encontrado:")
+        print("Entrenador:", entrenador[0])
+        print("Pokemon:", entrenador[1])
+        print("Ataque:", entrenador[2])
+        print("Vida:", entrenador[3])
+
+        del tupla[posicion]
+
+        print("\nEntrenador eliminado correctamente.")
+    else:
+        print("\nNo se encontró ningún Pokemon con esa vida.")
+
+def peleaPokemon(lista):
+    if len(lista) < 2:
+        print("\nSe necesitan al menos 2 Pokemones para pelear.")
+        return
+
+    listaEntrenador(lista)
+
+    print("\n========== PELEA POKEMON ==========")
+
+    pokemon1 = int(input("Ingrese el número del primer Pokemon: "))
+    pokemon2 = int(input("Ingrese el número del segundo Pokemon: "))
+
+    indice1 = pokemon1 - 1
+    indice2 = pokemon2 - 1
+
+    if indice1 == indice2 or indice1 < 0 or indice1 >= len(lista) or indice2 < 0 or indice2 >= len(lista):
+        print("\nSelección no válida.")
+        return
+
+    entrenador1 = lista[indice1]
+    entrenador2 = lista[indice2]
+
+    multiplicador1 = random.randint(0, 5)
+    multiplicador2 = random.randint(0, 5)
+
+    daño1 = entrenador1[2] * multiplicador1
+    daño2 = entrenador2[2] * multiplicador2
+
+    vida1 = entrenador1[3] - daño2
+    vida2 = entrenador2[3] - daño1
+
+    print("\n========== RESULTADO DEL COMBATE ==========")
+
+    print("\n", entrenador1[1])
+    print("Ataque:", entrenador1[2])
+    print("Multiplicador:", multiplicador1)
+    print("Daño recibido:", daño2)
+    print("Vida final:", vida1)
+
+    print("\n", entrenador2[1])
+    print("Ataque:", entrenador2[2])
+    print("Multiplicador:", multiplicador2)
+    print("Daño recibido:", daño1)
+    print("Vida final:", vida2)
+
+    if vida1 <= 0 and vida2 <= 0:
+        print("\nAMBOS PERDIERON.")
+        if indice1 > indice2:
+            del lista[indice1]
+            del lista[indice2]
+        else:
+            del lista[indice2]
+            del lista[indice1]
+
+    elif vida1 <= 0:
+        print("\nGanador:", entrenador2[0], "con", entrenador2[1])
+        del lista[indice1]
+
+    elif vida2 <= 0:
+        print("\nGanador:", entrenador1[0], "con", entrenador1[1])
+        del lista[indice2]
+
+    elif vida1 == vida2:
+        print("\nAMBOS EMPATARON.")
+        print("AMBOS PERDIERON.")
+        if indice1 > indice2:
+            del lista[indice1]
+            del lista[indice2]
+        else:
+            del lista[indice2]
+            del lista[indice1]
+
+    elif vida1 > vida2:
+        print("\nGanador:", entrenador1[0], "con", entrenador1[1])
+        del lista[indice2]
+
+    else:
+        print("\nGanador:", entrenador2[0], "con", entrenador2[1])
+        del lista[indice1]
+
+lista = []
+opcion = 0
+
+while opcion != 5:
+    print("\n======================================")
+    print("       CENTRO POKEMON                   ")
+    print("========================================")
+    print("1. Crear Entrenador")
+    print("2. Listar Entrenadores")
+    print("3. Borrar por Pokemon")
+    print("4. Pelea Pokemon")
+    print("5. Fin")
+    print("========================================")
+
+    opcion = int(input("Ingrese una opción: "))
+    if opcion == 1:
+        crearEntrenador(lista)
+    elif opcion == 2:
+        listaEntrenador(lista)
+    elif opcion == 3:
+        borraPorPokemon(lista)
+    elif opcion == 4:
+        peleaPokemon(lista)
+    elif opcion == 5:
+        print("\nPrograma finalizado.")
+    else:
+        print("\nOpción no válida.")
